@@ -18,7 +18,7 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
         private IConnection _connection;
         private string _connectionData;
         private CancellationTokenSource _webSocketTokenSource;
-        private ClientWebSocket _webSocket;
+        private HeaderClientWebSocket _webSocket;
         private int _disposed;
 
         public WebSocketTransport()
@@ -86,10 +86,16 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
             var uri = UrlBuilder.ConvertToWebSocketUri(url);
 
             _connection.Trace(TraceLevels.Events, "WS Connecting to: {0}", uri);
- 
+
             // TODO: Revisit thread safety of this assignment
             _webSocketTokenSource = new CancellationTokenSource();
-            _webSocket = new ClientWebSocket();
+            _webSocket = new HeaderClientWebSocket();
+
+            foreach (var kvp in _connection.Headers)
+            {
+                _webSocket.Options.SetRequestHeader(kvp.Key, kvp.Value);
+            }
+            _webSocket.Options.Cookies = _connection.CookieContainer;
 
             _connection.PrepareRequest(new WebSocketWrapperRequest(_webSocket, _connection));
 

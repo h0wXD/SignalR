@@ -33,7 +33,7 @@ namespace Microsoft.AspNet.SignalR.Client.Http
 
             _longRunningClient = new HttpClient(CreateHandler());
 
-            // Disabling the Http Client timeout 
+            // Disabling the Http Client timeout
             _longRunningClient.Timeout = TimeSpan.FromMilliseconds(-1.0);
 
             _shortRunningClient = new HttpClient(CreateHandler());
@@ -72,6 +72,12 @@ namespace Microsoft.AspNet.SignalR.Client.Http
             });
 
             prepareRequest(request);
+
+            foreach (var kvp in _connection.Headers)
+            {
+                requestMessage.Headers.Remove(kvp.Key);
+                requestMessage.Headers.Add(kvp.Key, kvp.Value);
+            }
 
             HttpClient httpClient = GetHttpClient(isLongRunning);
 
@@ -129,9 +135,15 @@ namespace Microsoft.AspNet.SignalR.Client.Http
 
             prepareRequest(request);
 
+            foreach (var kvp in _connection.Headers)
+            {
+                requestMessage.Headers.Remove(kvp.Key);
+                requestMessage.Headers.Add(kvp.Key, kvp.Value);
+            }
+
             HttpClient httpClient = GetHttpClient(isLongRunning);
 
-            return httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cts.Token)                
+            return httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cts.Token)
                 .Then(responseMessage =>
                 {
                     if (responseMessage.IsSuccessStatusCode)

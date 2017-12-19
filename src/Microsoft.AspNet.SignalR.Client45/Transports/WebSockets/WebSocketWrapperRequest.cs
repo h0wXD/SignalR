@@ -13,10 +13,10 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
 {
     internal class WebSocketWrapperRequest : IRequest
     {
-        private readonly ClientWebSocket _clientWebSocket;
+        private readonly HeaderClientWebSocket _clientWebSocket;
         private IConnection _connection;
 
-        public WebSocketWrapperRequest(ClientWebSocket clientWebSocket, IConnection connection)
+        public WebSocketWrapperRequest(HeaderClientWebSocket clientWebSocket, IConnection connection)
         {
             _clientWebSocket = clientWebSocket;
             _connection = connection;
